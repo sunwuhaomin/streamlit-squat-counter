@@ -1,5 +1,5 @@
-opencv-python-headless
+streamlit==1.7.0
+opencv-python-headless==4.5.5.64
 mediapipe==0.10.14
-streamlit
-matplotlib
 numpy
+pandas
