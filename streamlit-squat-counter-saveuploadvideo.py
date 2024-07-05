@@ -1,8 +1,9 @@
 import os
-import streamlit as st
 
-# 设置环境变量以避免 libGL.so.1 错误
-os.environ["PYOPENGL_PLATFORM"] = "egl"
+# 安装缺少的libGL库
+os.system('apt-get update && apt-get install -y libgl1-mesa-glx')
+
+import streamlit as st
 import cv2
 import mediapipe as mp
 import numpy as np
