@@ -1,15 +1,10 @@
 import os
 import streamlit as st
-import logging
-import cv2
-import mediapipe as mp
-import numpy as np
-import pandas as pd
-import datetime
-import tempfile
 
 # 设置环境变量以避免 libGL.so.1 错误
 os.environ["PYOPENGL_PLATFORM"] = "egl"
+
+import logging
 
 # 设置日志
 logging.basicConfig(level=logging.DEBUG)
@@ -20,6 +15,14 @@ try:
 except ImportError as e:
     logging.error(f"Error importing OpenCV: {e}")
     st.error(f"Error importing OpenCV: {e}")
+
+import mediapipe as mp
+import numpy as np
+import pandas as pd
+import datetime
+import tempfile
+
+
 
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
