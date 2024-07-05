@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import cv2
 import mediapipe as mp
@@ -5,6 +6,9 @@ import numpy as np
 import pandas as pd
 import datetime
 import tempfile
+
+# 设置环境变量以避免 libGL.so.1 错误
+os.environ["PYOPENGL_PLATFORM"] = "egl"
 
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
