@@ -1,7 +1,8 @@
 streamlit==1.25.0
 opencv-python-headless==4.5.5.64
-opencv-python==4.5.5.64
 mediapipe==0.10.14
 numpy<2,>=1.19.3
 pandas==2.2.2
 protobuf<5,>=4.25.3
+pyvista
+pyvistaqt
