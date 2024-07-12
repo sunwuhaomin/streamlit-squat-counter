@@ -1,8 +1,3 @@
-import os
-
-# 安装缺少的libGL库
-os.system('apt-get update && apt-get install -y libgl1-mesa-glx')
-
 import streamlit as st
 import cv2
 import mediapipe as mp
@@ -10,8 +5,6 @@ import numpy as np
 import pandas as pd
 import datetime
 import tempfile
-
-
 
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
