@@ -5,6 +5,24 @@ import numpy as np
 import pandas as pd
 import datetime
 import tempfile
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
+
+# Google Drive API setup
+SCOPES = ['https://www.googleapis.com/auth/drive.file']
+SERVICE_ACCOUNT_FILE = 'credentials.json'
+
+credentials = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+service = build('drive', 'v3', credentials=credentials)
+
+# Function to upload file to Google Drive
+def upload_to_drive(file_path, file_name):
+    file_metadata = {'name': file_name}
+    media = MediaFileUpload(file_path, resumable=True)
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    return file.get('id')
 
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
@@ -158,17 +176,15 @@ def main():
         st.session_state.exercise_active = False
 
     if save_button and st.session_state.position_data:
+        # Save position data to CSV
         df = pd.DataFrame(st.session_state.position_data)
-        csv = df.to_csv(index=False)
-        st.download_button(
-            label="Download position data as CSV",
-            data=csv,
-            file_name="squat_position_data.csv",
-            mime="text/csv",
-        )
+        csv_path = "squat_position_data.csv"
+        df.to_csv(csv_path, index=False)
 
-    if not st.session_state.exercise_active:
-        st.write("Exercise stopped. Click 'Save Data' to download the recorded data.")
+        # Upload CSV to Google Drive
+        file_id = upload_to_drive(csv_path, "squat_position_data.csv")
+        st.success(f"Data uploaded to Google Drive with file ID: {file_id}")
+        st.write(f"https://drive.google.com/file/d/{file_id}/view")
 
 if __name__ == "__main__":
     main()

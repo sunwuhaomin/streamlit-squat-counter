@@ -6,3 +6,7 @@ pandas==2.2.2
 protobuf<5,>=4.25.3
 pyvista
 pyvistaqt
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+google-api-python-client
