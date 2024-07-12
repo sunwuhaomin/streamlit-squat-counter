@@ -5,24 +5,39 @@ import numpy as np
 import pandas as pd
 import datetime
 import tempfile
-from google.oauth2 import service_account
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 # Google Drive API setup
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
-SERVICE_ACCOUNT_FILE = 'credentials.json'
+CLIENT_SECRET_FILE = 'credentials.json'
 
-credentials = service_account.Credentials.from_service_account_file(
-    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-service = build('drive', 'v3', credentials=credentials)
+# Function to get credentials
+def get_credentials():
+    creds = None
+    if 'token' in st.session_state:
+        creds = Credentials.from_authorized_user_info(st.session_state['token'], SCOPES)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                CLIENT_SECRET_FILE, SCOPES)
+            creds = flow.run_local_server(port=0)
+        st.session_state['token'] = creds.to_dict()
+    return creds
 
 # Function to upload file to Google Drive
 def upload_to_drive(file_path, file_name):
+    creds = get_credentials()
+    service = build('drive', 'v3', credentials=creds)
     file_metadata = {'name': file_name}
     media = MediaFileUpload(file_path, resumable=True)
     file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     return file.get('id')
+
 
 # Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
