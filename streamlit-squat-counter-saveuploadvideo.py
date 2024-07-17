@@ -5,28 +5,34 @@ import numpy as np
 import pandas as pd
 import datetime
 import tempfile
+from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+import os
+import pickle
 
 # Google Drive API setup
 SCOPES = ['https://www.googleapis.com/auth/drive.file']
 CLIENT_SECRET_FILE = 'credentials.json'
+TOKEN_PICKLE = 'token.pickle'
 
 # Function to get credentials
 def get_credentials():
     creds = None
-    if 'token' in st.session_state:
-        creds = Credentials.from_authorized_user_info(st.session_state['token'], SCOPES)
+    if os.path.exists(TOKEN_PICKLE):
+        with open(TOKEN_PICKLE, 'rb') as token:
+            creds = pickle.load(token)
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 CLIENT_SECRET_FILE, SCOPES)
-            creds = flow.run_local_server(port=0)
-        st.session_state['token'] = creds.to_dict()
+            creds = flow.run_local_server(port=8501)
+        with open(TOKEN_PICKLE, 'wb') as token:
+            pickle.dump(creds, token)
     return creds
 
 # Function to upload file to Google Drive
